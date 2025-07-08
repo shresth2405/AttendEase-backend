@@ -1,33 +1,29 @@
 import { ApiError } from "../utils/ApiError.js";
-import pool from "../config/db.js";
-import jwt from "jsonwebtoken"
+import sql from "../config/db.js";
+import jwt from "jsonwebtoken";
 
+export const verifyJWT = async (req, _, next) => {
+  try {
+    const token =
+      req.cookies?.token || req.header("Authorization")?.replace("Bearer ", "");
 
-export const verifyJWT = async(req, _, next) => {
-    try {
-        // console.log(req.cookies);
-        const token = req.cookies?.token || req.header("Authorization")?.replace("Bearer ", "")
-        
-        // console.log(token);
-        if (!token) {
-            throw new ApiError(401, "Unauthorized request")
-        }
-    
-        const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
-    
-        const user = await pool.query("SELECT * FROM users where id = ?",[decodedToken.id])
-
-        // console.log(user);
-    
-        if (!user) {
-            
-            throw new ApiError(401, "Invalid Access Token")
-        }
-    
-        req.user = user;
-        next()
-    } catch (error) {
-        throw new ApiError(401, error?.message || "Invalid access token")
+    if (!token) {
+      throw new ApiError(401, "Unauthorized request");
     }
-    
-}
+
+    const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+
+    const user = await sql`
+      SELECT * FROM users WHERE id = ${decodedToken.id}
+    `;
+
+    if (user.length === 0) {
+      throw new ApiError(401, "Invalid Access Token");
+    }
+
+    req.user = user;  // Keep structure same as before
+    next();
+  } catch (error) {
+    throw new ApiError(401, error?.message || "Invalid access token");
+  }
+};

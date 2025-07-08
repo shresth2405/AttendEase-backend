@@ -2,7 +2,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import sql from "../config/db.js";
 
 export const syncSubject = async (req, res) => {
-  const userId = req.user[0][0].id;
+  const userId = req.user[0].id;
   const subjects = req.body;
 
   try {
@@ -40,7 +40,7 @@ export const syncSubject = async (req, res) => {
 };
 
 export const getSubjectsfromDB = async (req, res) => {
-  const userId = req.user[0][0].id;
+  const userId = req.user[0].id;
 
   try {
     const records = await sql`

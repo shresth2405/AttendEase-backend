@@ -2,7 +2,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import sql from "../config/db.js";
 
 export const syncHistory = async (req, res) => {
-  const userId = req.user[0][0].id;
+  const userId = req.user[0].id;
   const history = req.body;
 
   try {
@@ -24,7 +24,7 @@ export const syncHistory = async (req, res) => {
 };
 
 export const getHistoryfromDB = async (req, res) => {
-  const userId = req.user[0][0].id;
+  const userId = req.user[0].id;
 
   try {
     const records = await sql`

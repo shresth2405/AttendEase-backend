@@ -6,7 +6,7 @@ import { deleteAccessTokenFromDB, generateAccessToken, saveAccessTokenToDB } fro
 
 export const registerUser = async (req, res) => {
   const { name, email, password } = req.body;
-  console.log(name);
+//   console.log(name);
   const existing = await sql`SELECT * FROM users WHERE email = ${email}`;
 
   if (existing.length > 0) {
@@ -51,11 +51,12 @@ export const loginUser = async (req, res) => {
 
 export const logoutUser = async (req, res) => {
   const user = req.user;
-  if (user[0].length === 0) {
+//   console.log(user);
+  if (user.length === 0) {
     throw new ApiError(400, 'User not logged in');
   }
 
-  await deleteAccessTokenFromDB(user[0][0].id);
+  await deleteAccessTokenFromDB(user[0].id);
 
   const option = { httpOnly: true, secure: true };
 
