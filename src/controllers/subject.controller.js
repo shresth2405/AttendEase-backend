@@ -4,10 +4,13 @@ import sql from "../config/db.js";
 export const syncSubject = async (req, res) => {
   const userId = req.user[0].id;
   const subjects = req.body;
+  console.log(subjects);
 
   try {
     for (const subject of subjects) {
-      const { code, name, teacher, total_classes, total_present } = subject;
+      const { code, name, teacher, total_classes, present } = subject;
+
+      console.log(code, name, teacher, total_classes, present);
       if (!code) continue;
 
       const result = await sql`
@@ -15,7 +18,7 @@ export const syncSubject = async (req, res) => {
         SET name = ${name},
             teacher = ${teacher},
             total_classes = ${total_classes},
-            total_present = ${total_present}
+            total_present = ${present}
         WHERE code = ${code} AND userid = ${userId}
         RETURNING *
       `;
@@ -23,7 +26,7 @@ export const syncSubject = async (req, res) => {
       if (result.length === 0) {
         await sql`
           INSERT INTO subject (userid, code, name, teacher, total_classes, total_present)
-          VALUES (${userId}, ${code}, ${name}, ${teacher}, ${total_classes}, ${total_present})
+          VALUES (${userId}, ${code}, ${name}, ${teacher}, ${total_classes}, ${present})
         `;
       }
     }
